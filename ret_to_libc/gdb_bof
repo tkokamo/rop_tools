@@ -1,0 +1,153 @@
+takuya@ubuntu:~/workspace/git/rop_tools/ret_to_libc$ gdb bof
+GNU gdb (Ubuntu 7.7.1-0ubuntu5~14.04.2) 7.7.1
+Copyright (C) 2014 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+<http://www.gnu.org/software/gdb/documentation/>.
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from bof...done.
+(gdb) disassemble main
+Dump of assembler code for function main:
+   0x000000000040060d <+0>:	    push   %rbp
+   0x000000000040060e <+1>:	    mov    %rsp,%rbp
+   0x0000000000400611 <+4>:	    sub    $0x140,%rsp
+   0x0000000000400618 <+11>:	    mov    %edi,-0x134(%rbp)
+   0x000000000040061e <+17>:	    mov    %rsi,-0x140(%rbp)
+   0x0000000000400625 <+24>:	    lea    -0x130(%rbp),%rdx
+   0x000000000040062c <+31>:	    mov    $0x0,%eax
+   0x0000000000400631 <+36>:	    mov    $0x25,%ecx
+   0x0000000000400636 <+41>:	    mov    %rdx,%rdi
+   0x0000000000400639 <+44>:	    rep stos %rax,%es:(%rdi)
+   0x000000000040063c <+47>:	    mov    %rdi,%rdx
+   0x000000000040063f <+50>:	    mov    %eax,(%rdx)
+   0x0000000000400641 <+52>:	    add    $0x4,%rdx
+   0x0000000000400645 <+56>:	    lea    -0x130(%rbp),%rax
+   0x000000000040064c <+63>:	    mov    %rax,%rsi
+   0x000000000040064f <+66>:	    mov    $0x400744,%edi
+   0x0000000000400654 <+71>:	    mov    $0x0,%eax
+   0x0000000000400659 <+76>:	    callq  0x4004f0 <printf@plt>
+   0x000000000040065e <+81>:	    mov    $0x4004d0,%esi
+   0x0000000000400663 <+86>:	    mov    $0x40074e,%edi
+   0x0000000000400668 <+91>:	    mov    $0x0,%eax
+   0x000000000040066d <+96>:	    callq  0x4004f0 <printf@plt>
+   0x0000000000400672 <+101>:	    mov    $0x4004e0,%esi
+   0x0000000000400677 <+106>:	    mov    $0x400759,%edi
+   0x000000000040067c <+111>:	    mov    $0x0,%eax
+   0x0000000000400681 <+116>:	    callq  0x4004f0 <printf@plt>
+   0x0000000000400686 <+121>:	    mov    -0x140(%rbp),%rax
+   0x000000000040068d <+128>:	    add    $0x8,%rax
+   0x0000000000400691 <+132>:	    mov    (%rax),%rdx
+   0x0000000000400694 <+135>:	    lea    -0x130(%rbp),%rax
+   0x000000000040069b <+142>:	    mov    %rdx,%rsi
+   0x000000000040069e <+145>:	    mov    %rax,%rdi
+   0x00000000004006a1 <+148>:	    callq  0x4004c0 <strcpy@plt>
+   0x00000000004006a6 <+153>:	    lea    -0x130(%rbp),%rax
+   0x00000000004006ad <+160>:	    mov    %rax,%rdi
+   0x00000000004006b0 <+163>:	    callq  0x4004d0 <puts@plt>
+   0x00000000004006b5 <+168>:	    mov    $0x0,%eax
+   0x00000000004006ba <+173>:	    leaveq 
+   0x00000000004006bb <+174>:	    retq   
+End of assembler dump.
+(gdb) b main
+Breakpoint 1 at 0x400625: file bof.c, line 7.
+(gdb) run
+Starting program: /home/takuya/workspace/git/rop_tools/ret_to_libc/bof 
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffdff8) at bof.c:7
+7	     char buf[300] = {};
+(gdb) i r rsp rbp
+rsp            0x7fffffffddd0	0x7fffffffddd0
+rbp            0x7fffffffdf10	0x7fffffffdf10
+(gdb) x/80gx $rsp
+0x7fffffffddc0:	
+		0x00007fffffffdfe8 <= argv
+		0x00000002 <= argc(0x7fffffffddcc)
+		0x00000830 <=     (0x7fffffffddc8)
+0x7fffffffddd0:	0x0000000000000000	0x00007fffffffdf58
+0x7fffffffdde0:	0x00007fffffffdf30	0x00007ffff7ff9a10
+0x7fffffffddf0:	0x0000000000000001	0x00007ffff7ffe520
+0x7fffffffde00:	0x00007ffff7ffe1c8	0x00007ffff7de4991
+0x7fffffffde10:	0x0000000000000000	0x00007ffff7ff9a10
+0x7fffffffde20:	0x0000000000000001	0x0000000000000000
+0x7fffffffde30:	0x00007fff00000001	0x00007ffff7ffe1c8
+0x7fffffffde40:	0x0000000000000000	0x0000000000000000
+0x7fffffffde50:	0x0000000000000000	0x0000000000000000
+0x7fffffffde60:	0x0000000000000000	0x00007ffff7ffe520
+0x7fffffffde70:	0x00007fffffffdea0	0x00007fffffffde90
+0x7fffffffde80:	0x00000000f63d4e2e	0x000000000040038d
+0x7fffffffde90:	0x00000000ffffffff	0x00007fffffffe000
+0x7fffffffdea0:	0x00007ffff7a241a8	0x00007ffff7ff94c0
+0x7fffffffdeb0:	0x00007ffff7ffe1c8	0x0000000000000000
+0x7fffffffdec0:	0x0000000000000001	0x000000000040070d
+0x7fffffffded0:	0x00007fffffffdf00	0x0000000000000000
+0x7fffffffdee0:	0x00000000004006c0	0x0000000000400520
+0x7fffffffdef0:	0x00007fffffffdfe0	0x0000000000000000
+0x7fffffffdf00:	0x0000000000000000	0x00007ffff7a35ec5
+0x7fffffffdf10:	0x0000000000000000	0x00007fffffffdfe8
+0x7fffffffdf20:	0x0000000200000000	0x000000000040060d
+0x7fffffffdf30:	0x0000000000000000	0x3c1925d4d68fdb4d
+0x7fffffffdf40:	0x0000000000400520	0x00007fffffffdfe0
+0x7fffffffdf50:	0x0000000000000000	0x0000000000000000
+0x7fffffffdf60:	0xc3e6da2b68afdb4d	0xc3e6ca926a75db4d
+0x7fffffffdf70:	0x0000000000000000	0x0000000000000000
+0x7fffffffdf80:	0x0000000000000000	0x00000000004006c0
+0x7fffffffdf90:	0x00007fffffffdfe8	0x0000000000000002
+0x7fffffffdfa0:	0x0000000000000000	0x0000000000000000
+0x7fffffffdfb0:	0x0000000000400520	0x00007fffffffdfe0
+0x7fffffffdfc0:	0x0000000000000000	0x0000000000400549
+0x7fffffffdfd0:	0x00007fffffffdfd8	0x000000000000001c
+0x7fffffffdfe0:	0x0000000000000002	0x00007fffffffe34a
+0x7fffffffdff0:	0x00007fffffffe37f	0x0000000000000000
+0x7fffffffe000:	0x00007fffffffe383	0x00007fffffffe38e
+0x7fffffffe010:	0x00007fffffffe3a0	0x00007fffffffe3d2
+0x7fffffffe020:	0x00007fffffffe3e3	0x00007fffffffe3f9
+0x7fffffffe030:	0x00007fffffffe42e	0x00007fffffffe43f
+(gdb) display argv
+3: argv = (char **) 0x7fffffffdfe8
+(gdb) display &argv
+5: &argv = (char ***) 0x7fffffffddc0
+(gdb) display &argc
+6: &argc = (int *) 0x7fffffffddcc
+(gdb) display *argv
+8: *argv = 0x7fffffffe34a "/home/takuya/workspace/git/rop_tools/ret_to_libc/bof"
+(gdb) display *(argv+1)
+9: *(argv+1) = 0x7fffffffe37f "aaa"
+(gdb) display &buf
+11: &buf = (char (*)[300]) 0x7fffffffddd0
+(gdb) 
+Continuing.
+system = 0x4004e0
+
+Breakpoint 4, __strcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S:47
+47	   ../sysdeps/x86_64/multiarch/strcpy-sse2-unaligned.S: No such file or directory.
+(gdb) i r rsp rbp
+rsp            0x7fffffffddb8	0x7fffffffddb8
+rbp            0x7fffffffdf00	0x7fffffffdf00
+(gdb) x/20gx $rsp
+0x7fffffffddb8:	0x00000000004006a6	0x00007fffffffdfe8
+0x7fffffffddc8:	0x0000000200000830	0x0000000000000000
+0x7fffffffddd8:	0x0000000000000000	0x0000000000000000
+0x7fffffffdde8:	0x0000000000000000	0x0000000000000000
+0x7fffffffddf8:	0x0000000000000000	0x0000000000000000
+0x7fffffffde08:	0x0000000000000000	0x0000000000000000
+0x7fffffffde18:	0x0000000000000000	0x0000000000000000
+0x7fffffffde28:	0x0000000000000000	0x0000000000000000
+0x7fffffffde38:	0x0000000000000000	0x0000000000000000
+0x7fffffffde48:	0x0000000000000000	0x0000000000000000
+(gdb) 
+Continuing.
+system = 0x4004e0
+
+
+   0x0000000000400694 <+135>:       lea    -0x130(%rbp),%rax => 0x7fffffffddd0 => set "/bin/bash"!!
+   0x000000000040069b <+142>:       mov    %rdx,%rsi
+   0x000000000040069e <+145>:       mov    %rax,%rdi
+0x7fffffffdf28:	      0x000000000040060d <= return addr from main

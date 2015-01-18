@@ -1,0 +1,88 @@
+takuya@ubuntu:~/workspace/git/rop_tools/ret_to_libc$ gdb system
+GNU gdb (Ubuntu 7.7.1-0ubuntu5~14.04.2) 7.7.1
+Copyright (C) 2014 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+<http://www.gnu.org/software/gdb/documentation/>.
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from system...done.
+(gdb) disas main
+Dump of assembler code for function main:
+   0x000000000040052d <+0>:	    push   %rbp
+   0x000000000040052e <+1>:	    mov    %rsp,%rbp
+   0x0000000000400531 <+4>:	    mov    $0x4005d4,%edi
+   0x0000000000400536 <+9>:	    mov    $0x0,%eax
+   0x000000000040053b <+14>:	    callq  0x400410 <system@plt>
+   0x0000000000400540 <+19>:	    mov    $0x0,%eax
+   0x0000000000400545 <+24>:	    pop    %rbp
+   0x0000000000400546 <+25>:	    retq   
+End of assembler dump.
+(gdb) b system
+Breakpoint 1 at 0x400410
+(gdb) run
+Starting program: /home/takuya/workspace/git/rop_tools/ret_to_libc/system 
+
+Breakpoint 1, __libc_system (line=0x4005d4 "/bin/bash") at ../sysdeps/posix/system.c:179
+warning: Source file is more recent than executable.
+(gdb) disassemble main
+Dump of assembler code for function main:
+   0x000000000040052d <+0>:	    push   %rbp
+   0x000000000040052e <+1>:	    mov    %rsp,%rbp
+   0x0000000000400531 <+4>:	    mov    $0x4005d4,%edi
+   0x0000000000400536 <+9>:	    mov    $0x0,%eax
+   0x000000000040053b <+14>:	    callq  0x400410 <system@plt>
+   0x0000000000400540 <+19>:	    mov    $0x0,%eax
+   0x0000000000400545 <+24>:	    pop    %rbp
+   0x0000000000400546 <+25>:	    retq   
+End of assembler dump.
+(gdb) i r rsp rbp
+rsp            0x7fffffffdf08	0x7fffffffdf08
+rbp            0x7fffffffdf10	0x7fffffffdf10
+(gdb) x/40gx $rsp
+0x7fffffffdf08:	
+		0x0000000000400540 <= ret address
+0x7fffffffdf10:
+		0x0000000000000000
+		0x00007ffff7a35ec5
+		0x0000000000000000
+0x7fffffffdf28:	0x00007fffffffdff8	0x0000000100000000
+0x7fffffffdf38:	0x000000000040052d	0x0000000000000000
+0x7fffffffdf48:	0xab5ddce26395664c	0x0000000000400440
+0x7fffffffdf58:	0x00007fffffffdff0	0x0000000000000000
+0x7fffffffdf68:	0x0000000000000000	0x54a2231dddd5664c
+0x7fffffffdf78:	0x54a233a4df6f664c	0x0000000000000000
+0x7fffffffdf88:	0x0000000000000000	0x0000000000000000
+0x7fffffffdf98:	0x0000000000400550	0x00007fffffffdff8
+0x7fffffffdfa8:	0x0000000000000001	0x0000000000000000
+0x7fffffffdfb8:	0x0000000000000000	0x0000000000400440
+0x7fffffffdfc8:	0x00007fffffffdff0	0x0000000000000000
+0x7fffffffdfd8:	0x0000000000400469	0x00007fffffffdfe8
+0x7fffffffdfe8:	0x000000000000001c	0x0000000000000001
+0x7fffffffdff8:	0x00007fffffffe348	0x0000000000000000
+0x7fffffffe008:	0x00007fffffffe380	0x00007fffffffe38b
+0x7fffffffe018:	0x00007fffffffe39d	0x00007fffffffe3cf
+0x7fffffffe028:	0x00007fffffffe3e0	0x00007fffffffe3f6
+0x7fffffffe038:	0x00007fffffffe42b	0x00007fffffffe43c
+
+(gdb) x/s 0x00007fffffffe348
+0x7fffffffe348:	"/home/takuya/workspace/git/rop_tools/ret_to_libc/system"
+(gdb) x/s 0x00007fffffffe380
+0x7fffffffe380:	"XDG_VTNR=7"
+(gdb) x/s 0x00007fffffffe38b
+0x7fffffffe38b:	"XDG_SESSION_ID=c2"
+(gdb) x/s 0x00007fffffffe39d
+0x7fffffffe39d:	"XDG_GREETER_DATA_DIR=/var/lib/lightdm-data/takuya"
+(gdb) x/s 0x00007fffffffe3cf
+0x7fffffffe3cf:	"SELINUX_INIT=YES"
+(gdb) x/s 0x00007fffffffe3e0
+0x7fffffffe3e0:	"CLUTTER_IM_MODULE=xim"
+(gdb) x/s 0x00007fffffffe3f6
+0x7fffffffe3f6:	"GPG_AGENT_INFO=/run/user/1000/keyring-bhs8Yn/gpg:0:1"

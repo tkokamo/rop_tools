@@ -1,4 +1,4 @@
-#!/opt/rh/ruby193/root/usr/bin/ruby
+#!/usr/bin/ruby
 require 'open3'
 require 'pp'
 
